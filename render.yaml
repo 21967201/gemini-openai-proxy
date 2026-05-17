@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: gemini-openai-proxy
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false  # 需要在 Render Dashboard 手动设置
+      - key: NODE_VERSION
+        value: 18.19.0

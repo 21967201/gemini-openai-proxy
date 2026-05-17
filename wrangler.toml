@@ -2,8 +2,8 @@ name = "gemini-openai-proxy"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
-# 你的 Cloudflare Account ID (从 Cloudflare Dashboard 获取)
-account_id = ""
+# Cloudflare Account ID
+account_id = "d94db9a244640b3b5debf1d349ee1369"
 
 # 开发环境配置
 [dev]
