@@ -1,13 +1,11 @@
-// worker.js - Gemini to OpenAI Compatible Proxy with Streaming Support
-// 支持 WorkBuddy / Open WebUI / ANY OpenAI 兼容客户端
+// worker.js - Gemini to OpenAI Compatible Proxy
+// 支持流式和非流式响应
 
-export default {
-  async fetch(request, env, ctx) {
-    return handleRequest(request, env);
-  }
-};
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+});
 
-async function handleRequest(request, env) {
+async function handleRequest(request) {
   const url = new URL(request.url);
   
   // CORS 处理
@@ -20,27 +18,36 @@ async function handleRequest(request, env) {
       }
     });
   }
-
+  
   // 健康检查
   if (url.pathname === '/health') {
-    return jsonResponse({ status: 'ok', provider: 'gemini' });
+    return new Response(
+      JSON.stringify({ status: 'ok', provider: 'gemini' }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+    );
   }
-
+  
   // OpenAI 兼容端点
   if (url.pathname === '/v1/chat/completions' && request.method === 'POST') {
-    return handleOpenAICompat(request, env);
+    return handleOpenAICompat(request);
   }
-
+  
   // 模型列表
   if (url.pathname === '/v1/models' && request.method === 'GET') {
     return handleListModels();
   }
-
+  
   return new Response('Not Found', { status: 404 });
 }
 
-async function handleOpenAICompat(request, env) {
-  const apiKey = env.GEMINI_API_KEY;
+async function handleOpenAICompat(request) {
+  // 从 Secrets 读取 API Key
+  const apiKey = GEMINI_API_KEY;
   
   if (!apiKey) {
     return jsonResponse({ error: 'GEMINI_API_KEY not configured' }, 500);
@@ -68,7 +75,7 @@ async function handleOpenAICompat(request, env) {
   const geminiModel = convertModelName(model);
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}`;
 
-  // 🔥 流式响应
+  // 流式响应
   if (stream === true) {
     return handleStreamingResponse(apiUrl, apiKey, geminiRequest);
   }
@@ -77,7 +84,7 @@ async function handleOpenAICompat(request, env) {
   return handleNonStreamingResponse(apiUrl, apiKey, geminiRequest);
 }
 
-// 🔥 流式响应处理
+// 流式响应处理
 async function handleStreamingResponse(apiUrl, apiKey, geminiRequest) {
   const url = `${apiUrl}:streamGenerateContent?alt=sse&key=${apiKey}`;
   
@@ -167,7 +174,7 @@ function convertMessagesToGemini(messages) {
         role: 'user',
         parts: [{ text: msg.content }]
       });
-    } else if (msg.role === 'assistant') {  // ✅ 修复：正确拼写为 'assistant'
+    } else if (msg.role === 'assistant') {
       contents.push({
         role: 'model',
         parts: [{ text: msg.content }]
@@ -190,7 +197,7 @@ function convertGeminiToOpenAI(geminiResponse) {
     choices: [{
       index: 0,
       message: {
-        role: 'assistant',  // ✅ 修复：正确拼写为 'assistant'
+        role: 'assistant',
         content: text
       },
       finish_reason: 'stop'
