@@ -1,0 +1,33 @@
+{
+  "name": "gemini-openai-proxy",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker: Gemini to OpenAI Compatible Proxy with Streaming Support",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "gemini",
+    "openai",
+    "proxy",
+    "streaming",
+    "ai",
+    "llm"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/gemini-openai-proxy.git"
+  }
+}

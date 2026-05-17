@@ -1,0 +1,31 @@
+# Dependencies (if you use npm packages)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Wrangler
+.wrangler/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Optional: your API keys (never commit real keys!)
+# 警告：永远不要提交真实的 API Key！
+# 使用 wrangler secret put GEMINI_API_KEY 来安全存储
