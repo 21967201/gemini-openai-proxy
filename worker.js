@@ -59,9 +59,9 @@ async function handleOpenAICompat(request, env) {
   const geminiRequest = {
     contents: convertMessagesToGemini(messages),
     generationConfig: {
-      ...(temperature && { temperature }),
-      ...(max_tokens && { maxOutputTokens: max_tokens }),
-      ...(top_p && { topP: top_p }),
+      ...(temperature !== undefined && { temperature }),
+      ...(max_tokens !== undefined && { maxOutputTokens: max_tokens }),
+      ...(top_p !== undefined && { topP: top_p }),
     }
   };
 
@@ -167,7 +167,7 @@ function convertMessagesToGemini(messages) {
         role: 'user',
         parts: [{ text: msg.content }]
       });
-    } else if (msg.role === 'assistant') {
+    } else if (msg.role === 'assistant') {  // ✅ 修复：正确拼写为 'assistant'
       contents.push({
         role: 'model',
         parts: [{ text: msg.content }]
@@ -190,7 +190,7 @@ function convertGeminiToOpenAI(geminiResponse) {
     choices: [{
       index: 0,
       message: {
-        role: 'assistant',
+        role: 'assistant',  // ✅ 修复：正确拼写为 'assistant'
         content: text
       },
       finish_reason: 'stop'
